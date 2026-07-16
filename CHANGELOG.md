@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.0.1 — 2026-07-16
+### Fixed
+- PermissionError when creating the logs folder or saving settings when installed (stored under Documents/ISCmetrics)
+- Resolved window icon resolution path mismatch when run from installer shortcuts
+
 ## v2.0.0 — 2026-07-16
 ### Added
 - WiFi-style signal-strength (LQI) indicator in status bar

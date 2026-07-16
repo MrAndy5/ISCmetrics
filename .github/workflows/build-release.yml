@@ -65,7 +65,7 @@ jobs:
         run: |
           $v = "${{ steps.ver.outputs.VERSION }}" -replace '^v', ''
           $content = Get-Content ui.py -Raw
-          $content = $content -replace 'APP_VERSION\s*=\s*"[^"]+"', "APP_VERSION = `"$v`""
+          $content = $content -replace 'APP_VERSION\s*=\s*"[^"]+"', "APP_VERSION = `\"$v`\""
           Set-Content ui.py $content -NoNewline
           Write-Host "APP_VERSION patched to: $v"
 

@@ -364,6 +364,12 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.2.0 — 2026-07-16
+### Added
+- In-app automatic update downloader (downloads setup EXE, displays progress dialog, runs the installer, and closes the app automatically to apply the update)
+- Thread-safe GUI signal communication for background update detection and download operations
+- Exposed the application version in the main window title and header bar
+
 ## v2.1.0 — 2026-07-16
 ### Added
 - Toggle option in Settings to enable/disable Text-to-Speech (TTS) voice alerts

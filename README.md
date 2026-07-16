@@ -1,133 +1,18 @@
-<div align="center">
+# ISCmetrics — Releases
 
-<img src="https://raw.githubusercontent.com/MrAndy5/ISCmetrics/main/assets/isc_logo.png" width="120" alt="ISC Logo"/>
+This repository hosts the **Windows installer releases** for ISCmetrics,
+the real-time telemetry dashboard of ISC Formula Student.
 
-# ISCmetrics
+## Installing / Updating
 
-**Real-time telemetry dashboard for ISC Formula Student**
+1. Download the latest `ISCmetrics_Setup_vX.Y.Z.exe` from the [Releases](../../releases) page.
+2. Run the installer — it will overwrite any existing installation automatically.
+3. Launch **ISCmetrics** from the Desktop or Start Menu shortcut.
 
-[![Release](https://img.shields.io/github/v/release/MrAndy5/ISCmetrics?color=008000&label=latest&style=flat-square)](https://github.com/MrAndy5/ISCmetrics/releases/latest)
-[![Platform](https://img.shields.io/badge/platform-Windows-blue?style=flat-square)](https://github.com/MrAndy5/ISCmetrics/releases/latest)
-[![License](https://img.shields.io/badge/license-ISC%20FS-008000?style=flat-square)](#)
+## Auto-update
 
-[**⬇ Download Latest Installer**](https://github.com/MrAndy5/ISCmetrics/releases/latest)
+ISCmetrics checks this repository for new releases every time it starts.
+If a newer version is available, a banner will appear in the application
+offering to download and install the update.
 
-</div>
 
----
-
-## What is ISCmetrics?
-
-ISCmetrics is the **real-time telemetry and data visualization system** used by ISC Formula Student at the track. It connects wirelessly to the car's ECU via an nRF24L01+ radio link, decodes the live data stream and presents it in a Grafana-inspired dark dashboard — all running on a Windows laptop at the pit wall.
-
----
-
-## Features
-
-### 📡 Live Radio Telemetry
-Receives data from the car over a **2.4 GHz nRF24L01+ radio link** (RF-Nano USB receiver). A fragmented snapshot protocol reassembles multi-packet frames on the fly at up to ~10 Hz update rate.
-
-### 📶 Signal Quality Indicator
-A **WiFi-style 4-bar signal strength indicator** shows the link quality in real time. It tracks packet loss over a rolling window of the last 50 frames — bars turn from green → orange → red as reception degrades, giving the engineer instant situational awareness at range.
-
-### ⚡ Overview Dashboard
-At-a-glance view of the most critical car parameters:
-- **RPM**, **DC Bus Voltage**, **Pack Current**, **State of Charge**
-- **Torque %**, **Inverter State**, **Error flags**
-- **Live throttle / brake overlay plot**
-- **Precharge**, **INV OK** and **AMS state** indicators
-
-### 🔋 Powertrain Tab
-Detailed powertrain health panel:
-- **RPM arc gauge** with actual speed readout
-- **Per-inverter temperatures** (Motor, Power Stage, Board, DC-DC)
-- **Battery summary**: DC Bus, SoC (VTC6 OCV curve), Pack Current, Min Cell Voltage
-- **Per-module cell voltage and temperature bars** (5 modules, color-coded with configurable alert thresholds)
-
-### 🏎 Dynamics Tab
-Driver inputs and vehicle dynamics:
-- **Throttle & Brake pedal meters** (APPS 1, APPS 2, Brake raw ADC)
-- **Control signals**: Torque %, Start Button, EV2/3, T11, Controller State
-- **G-force circle plot** (lateral vs. longitudinal)
-
-### 📊 Customise Tab
-Drag-and-drop **6 configurable plot panels** — pick any ECU channel from the full signal list and assign it to a panel for live plotting during the session.
-
-### 📁 Session Logging
-Every live session is automatically saved as a **timestamped CSV file** (`logs/ISC_YYYYMMDD_HHMMSS_Piloto_Circuito.csv`) with all ECU channels at full resolution. Sessions can be reviewed in the built-in **Post-Race Viewer** or opened in Excel / Marple for post-processing analysis.
-
-### ☁️ Marple Cloud Upload *(password protected)*
-Optionally stream session data live to **Marple Data** for cloud analysis. This feature requires team authentication — contact the telemetry engineer for access.
-
-### 🔊 Voice Alerts
-Critical events are announced over TTS (Windows Speech):
-- High battery temperature
-- Low DC bus or cell voltage
-- Radio signal lost
-- USB receiver disconnected
-
-### 🔄 Auto-Update
-ISCmetrics checks for new releases every time it starts. If an update is available, a **green banner** appears with a one-click download link — no need to manually check this page.
-
-### 🎬 Demo Mode
-Run the full dashboard offline with **simulated telemetry data** — useful for UI testing, presentations, or training new team members without needing the car.
-
----
-
-## Installation
-
-### Requirements
-- Windows 10 / 11 (64-bit)
-- RF-Nano USB receiver plugged in (for live data)
-
-### Install
-1. Download **`ISCmetrics_Setup_vX.Y.Z.exe`** from the [Releases](https://github.com/MrAndy5/ISCmetrics/releases/latest) page
-2. Run the installer — no admin rights configuration needed, accepts defaults
-3. Launch **ISCmetrics** from the Desktop or Start Menu shortcut
-
-### Update
-When a new version is released, ISCmetrics will notify you automatically at startup. Click **Download Update** in the banner, run the new installer — it replaces the old version in-place with no manual uninstall required.
-
----
-
-## Quick Start
-
-1. Plug in the **RF-Nano USB receiver** and note the COM port (Device Manager → Ports)
-2. Launch **ISCmetrics**
-3. Click **⚙ Settings** → select the correct COM port → click **Apply & Close**
-4. Click **▶ Start** — the status badge turns **LIVE** 🟢 when packets are received
-5. Click **■ Stop** to end the session; the CSV log is saved automatically
-
----
-
-## Alert Thresholds
-
-Configurable in **Settings**:
-
-| Alert | Default threshold |
-|-------|-------------------|
-| Max module temperature | > 40 °C |
-| DC Bus voltage | < 380 V |
-| Min cell voltage | < 3400 mV |
-
----
-
-## Signal Strength Reference
-
-| Bars | LQI | Meaning |
-|------|-----|---------|
-| ████ | ≥ 85% | Excellent — full range |
-| ███░ | ≥ 70% | Good |
-| ██░░ | ≥ 50% | Fair — approaching range limit |
-| █░░░ | ≥ 25% | Poor — consider repositioning antenna |
-| ░░░░ | < 25% | Critical packet loss |
-
----
-
-<div align="center">
-
-**ISC Formula Student · Universidad Pontificia Comillas ICAI**
-
-*Built for the track. Engineered for clarity.*
-
-</div>

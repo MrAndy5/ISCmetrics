@@ -1,0 +1,97 @@
+name: Build & Release ISCmetrics
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version (e.g. v2.0.0-test)'
+        required: false
+
+jobs:
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-latest
+
+    steps:
+      # ── 1. Releases repo (contains installer script) ─────────────────────
+      - name: Checkout releases repo
+        uses: actions/checkout@v4
+
+      # ── 2. ISCmetrics source (public) ─────────────────────────────────────
+      - name: Checkout ISCmetrics source
+        uses: actions/checkout@v4
+        with:
+          repository: isc-fs/IFS08-TE
+          sparse-checkout: ISC_REAL_TIME_25
+          path: src
+
+      # ── 3. Python ─────────────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        working-directory: src/ISC_REAL_TIME_25
+        run: >
+          pip install --upgrade pip
+          pyinstaller pyqt5 matplotlib numpy pyserial
+          requests openpyxl influxdb-client
+
+      # ── 4. Determine version tag ──────────────────────────────────────────
+      - name: Get version
+        id: ver
+        shell: pwsh
+        run: |
+          $t = "${{ github.ref_name }}"
+          if ($t -eq "") { $t = "${{ github.event.inputs.version }}" }
+          if ($t -eq "") { $t = "v0.0.0-dev" }
+          Add-Content $env:GITHUB_OUTPUT "VERSION=$t"
+
+      # ── 5. Patch APP_VERSION inside ui.py ────────────────────────────────
+      - name: Patch APP_VERSION
+        working-directory: src/ISC_REAL_TIME_25
+        shell: pwsh
+        run: |
+          $v = "${{ steps.ver.outputs.VERSION }}" -replace '^v',''
+          (Get-Content ui.py -Raw) `
+            -replace 'APP_VERSION\s*=\s*"[^"]+"',"APP_VERSION = `"$v`"" |
+          Set-Content ui.py
+          Write-Host "APP_VERSION patched to $v"
+
+      # ── 6. Build EXE ─────────────────────────────────────────────────────
+      - name: PyInstaller build
+        working-directory: src/ISC_REAL_TIME_25
+        run: pyinstaller ISC_RTT.spec --clean --noconfirm
+
+      # ── 7. Install NSIS ───────────────────────────────────────────────────
+      - name: Install NSIS
+        run: choco install nsis -y --no-progress
+
+      # ── 8. Compile installer ──────────────────────────────────────────────
+      - name: Compile NSIS installer
+        id: nsis
+        shell: pwsh
+        run: |
+          $v   = "${{ steps.ver.outputs.VERSION }}"
+          $out = "ISCmetrics_Setup_$v.exe"
+          Copy-Item installer\iscmetrics_setup.nsi src\ISC_REAL_TIME_25\
+          & 'C:\Program Files (x86)\NSIS\makensis.exe' `
+              /DAPP_VERSION="$v" `
+              /DOUTFILE="$out" `
+              src\ISC_REAL_TIME_25\iscmetrics_setup.nsi
+          Add-Content $env:GITHUB_OUTPUT "INSTALLER=src/ISC_REAL_TIME_25/$out"
+
+      # ── 9. Publish GitHub Release ─────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.VERSION }}
+          name: 'ISCmetrics ${{ steps.ver.outputs.VERSION }}'
+          body_path: CHANGELOG.md
+          files: ${{ steps.nsis.outputs.INSTALLER }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

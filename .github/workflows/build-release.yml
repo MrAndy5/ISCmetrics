@@ -16,19 +16,20 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # ── 1. Releases repo (contains installer script) ─────────────────────
+      # ── 1. Checkout this releases repo (contains installer script) ────────
       - name: Checkout releases repo
         uses: actions/checkout@v4
 
-      # ── 2. ISCmetrics source (public) ─────────────────────────────────────
+      # ── 2. Checkout ISCmetrics source ─────────────────────────────────────
       - name: Checkout ISCmetrics source
         uses: actions/checkout@v4
         with:
           repository: isc-fs/IFS08-TE
           sparse-checkout: ISC_REAL_TIME_25
+          sparse-checkout-cone-mode: false
           path: src
 
-      # ── 3. Python ─────────────────────────────────────────────────────────
+      # ── 3. Python setup ───────────────────────────────────────────────────
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
@@ -36,62 +37,89 @@ jobs:
 
       - name: Install Python dependencies
         working-directory: src/ISC_REAL_TIME_25
-        run: >
+        run: |
           pip install --upgrade pip
-          pyinstaller pyqt5 matplotlib numpy pyserial
-          requests openpyxl influxdb-client
+          pip install pyinstaller pyqt5 matplotlib numpy pyserial requests openpyxl influxdb-client
 
-      # ── 4. Determine version tag ──────────────────────────────────────────
+      # ── 4. Resolve version ────────────────────────────────────────────────
       - name: Get version
         id: ver
         shell: pwsh
         run: |
           $t = "${{ github.ref_name }}"
-          if ($t -eq "") { $t = "${{ github.event.inputs.version }}" }
-          if ($t -eq "") { $t = "v0.0.0-dev" }
+          if ([string]::IsNullOrEmpty($t) -or $t -eq "refs/heads/main") {
+            $t = "${{ github.event.inputs.version }}"
+          }
+          if ([string]::IsNullOrEmpty($t)) { $t = "v0.0.0-dev" }
           Add-Content $env:GITHUB_OUTPUT "VERSION=$t"
+          Write-Host "Version resolved: $t"
 
-      # ── 5. Patch APP_VERSION inside ui.py ────────────────────────────────
+      # ── 5. Patch APP_VERSION in ui.py ─────────────────────────────────────
       - name: Patch APP_VERSION
         working-directory: src/ISC_REAL_TIME_25
         shell: pwsh
         run: |
-          $v = "${{ steps.ver.outputs.VERSION }}" -replace '^v',''
-          (Get-Content ui.py -Raw) `
-            -replace 'APP_VERSION\s*=\s*"[^"]+"',"APP_VERSION = `"$v`"" |
-          Set-Content ui.py
-          Write-Host "APP_VERSION patched to $v"
+          $v = "${{ steps.ver.outputs.VERSION }}" -replace '^v', ''
+          $content = Get-Content ui.py -Raw
+          $content = $content -replace 'APP_VERSION\s*=\s*"[^"]+"', "APP_VERSION = `"$v`""
+          Set-Content ui.py $content -NoNewline
+          Write-Host "APP_VERSION patched to: $v"
 
-      # ── 6. Build EXE ─────────────────────────────────────────────────────
+      # ── 6. Build with PyInstaller ─────────────────────────────────────────
       - name: PyInstaller build
         working-directory: src/ISC_REAL_TIME_25
         run: pyinstaller ISC_RTT.spec --clean --noconfirm
 
-      # ── 7. Install NSIS ───────────────────────────────────────────────────
+      # ── 7. Verify build output ────────────────────────────────────────────
+      - name: Verify build
+        working-directory: src/ISC_REAL_TIME_25
+        shell: pwsh
+        run: |
+          if (!(Test-Path "dist\ISC_RTT\ISC_RTT.exe")) {
+            Write-Error "PyInstaller output not found!"
+            exit 1
+          }
+          Write-Host "Build OK — $(Get-ChildItem dist\ISC_RTT | Measure-Object).Count files in dist\ISC_RTT"
+
+      # ── 8. Install NSIS ───────────────────────────────────────────────────
       - name: Install NSIS
         run: choco install nsis -y --no-progress
 
-      # ── 8. Compile installer ──────────────────────────────────────────────
+      # ── 9. Stage NSIS script alongside build output ───────────────────────
+      - name: Stage NSIS script
+        shell: pwsh
+        run: |
+          Copy-Item "installer\iscmetrics_setup.nsi" "src\ISC_REAL_TIME_25\iscmetrics_setup.nsi"
+
+      # ── 10. Compile installer EXE ─────────────────────────────────────────
       - name: Compile NSIS installer
         id: nsis
+        working-directory: src/ISC_REAL_TIME_25
         shell: pwsh
         run: |
           $v   = "${{ steps.ver.outputs.VERSION }}"
           $out = "ISCmetrics_Setup_$v.exe"
-          Copy-Item installer\iscmetrics_setup.nsi src\ISC_REAL_TIME_25\
-          & 'C:\Program Files (x86)\NSIS\makensis.exe' `
-              /DAPP_VERSION="$v" `
-              /DOUTFILE="$out" `
-              src\ISC_REAL_TIME_25\iscmetrics_setup.nsi
-          Add-Content $env:GITHUB_OUTPUT "INSTALLER=src/ISC_REAL_TIME_25/$out"
+          $nsis = "C:\Program Files (x86)\NSIS\makensis.exe"
+          & $nsis /DAPP_VERSION="$v" /DOUTFILE="$out" iscmetrics_setup.nsi
+          if ($LASTEXITCODE -ne 0) { Write-Error "NSIS failed"; exit 1 }
+          Write-Host "Installer created: $out ($('{0:N1}' -f ((Get-Item $out).Length / 1MB)) MB)"
+          Add-Content $env:GITHUB_OUTPUT "INSTALLER=$out"
 
-      # ── 9. Publish GitHub Release ─────────────────────────────────────────
+      # ── 11. Upload artifact (for debugging) ───────────────────────────────
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: src/ISC_REAL_TIME_25/${{ steps.nsis.outputs.INSTALLER }}
+
+      # ── 12. Publish GitHub Release ────────────────────────────────────────
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.VERSION }}
-          name: 'ISCmetrics ${{ steps.ver.outputs.VERSION }}'
+          name: ISCmetrics ${{ steps.ver.outputs.VERSION }}
           body_path: CHANGELOG.md
-          files: ${{ steps.nsis.outputs.INSTALLER }}
+          files: src/ISC_REAL_TIME_25/${{ steps.nsis.outputs.INSTALLER }}
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

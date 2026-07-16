@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.4.0 — 2026-07-17
+### Added
+- Pit-Wall Session Notes with real-time logging synced to session CSV files
+- Live ECU & Inverter Fault decoding aligned with ePowerLabs error specifications
+- G-Force persistence trails showing vehicle dynamics history on the G-Force circle plot
+- High-priority audible alarms for critical status and telemetry alerts
+
 ## v2.3.0 — 2026-07-16
 ### Added
 - Dynamic Light and Dark Mode switching support with a button in the top bar

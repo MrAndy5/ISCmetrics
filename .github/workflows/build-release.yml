@@ -10,6 +10,9 @@ on:
         description: 'Override version (e.g. v2.0.0-test)'
         required: false
 
+permissions:
+  contents: write   # required to create GitHub Releases and upload assets
+
 jobs:
   build-windows:
     name: Build Windows Installer

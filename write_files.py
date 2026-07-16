@@ -364,9 +364,16 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
-## v2.0.1 — 2026-07-16
+## v2.1.0 — 2026-07-16
+### Added
+- Toggle option in Settings to enable/disable Text-to-Speech (TTS) voice alerts
+- Slower TTS rate for improved intelligibility at the track and auto-selection of high-quality voices (Zira/Helena/Hazel/Sabina)
+- High-contrast premium style sheet with custom SVG checkbox indicators in Settings dialog
+
 ### Fixed
-- PermissionError when creating the logs folder or saving settings when installed (stored under Documents/ISCmetrics)
+- Run Marple Data cloud upload in a background thread to prevent UI freezing/blocking
+- Correctly reset snapshot state and LQI history on session start (fixes session restart bugs)
+- PermissionError when creating logs folder or saving settings when installed (saved under Documents/ISCmetrics)
 - Resolved window icon resolution path mismatch when run from installer shortcuts
 
 ## v2.0.0 — 2026-07-16

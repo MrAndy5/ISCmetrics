@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.0 — 2026-07-16
+### Added
+- Dynamic Light and Dark Mode switching support with a button in the top bar
+- Automatic restyling of plotting canvases, widgets, panels, buttons, and custom controls upon theme toggling
+
 ## v2.2.0 — 2026-07-16
 ### Added
 - In-app automatic update downloader (downloads setup EXE, displays progress dialog, runs the installer, and closes the app automatically to apply the update)

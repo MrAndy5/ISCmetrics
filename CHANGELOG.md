@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.5.0 — 2026-07-18
+### Added
+- New **Post-Race** tab supporting CAN/ISO-TP log retrieval directly from the car's log system (LogFS protocol over CAN), with live download progress and transfer statistics
+- Optional `python-can` dependency integration (`import can`) for native CAN interface communication
+
+### Fixed
+- Reset active alerts and telemetry LQI indicators to idle defaults when the application is not receiving data
+
 ## v2.4.0 — 2026-07-17
 ### Added
 - Pit-Wall Session Notes with real-time logging synced to session CSV files

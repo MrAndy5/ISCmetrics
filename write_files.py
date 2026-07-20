@@ -364,6 +364,10 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.6.2 — 2026-07-20
+### Fixed
+- Applied empirical APPS calibration bounds (`APPS1_MIN/MAX` & `APPS2_MIN/MAX`) to Overview Throttle/Brake overlay plot, eliminating false 60% throttle readouts at pedal rest
+
 ## v2.6.1 — 2026-07-20
 ### Fixed
 - Internal resistance (IR) voltage drop compensation for Sony VTC6 SoC estimation (`0.35 mV/A` per 6p group) to eliminate false SoC sags during high current acceleration spikes

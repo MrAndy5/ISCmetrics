@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.6.0 — 2026-07-20
+### Added
+- Full NxTech Inverter State Machine decoding (INIT, STANDBY, READY, TORQUE/SPEED/CURRENT Active, FAULT_SOFT, FAULT_HARD, DISCHARGE, SHUTDOWN)
+- Comprehensive NxTech DEM Diagnostic Code decoding (0–37) with safe-state reaction indicators (Freewheeling, Degrade, None)
+- Dual Motor Temperature Sensor support (`EMachine_Temp_1` and `EMachine_Temp_2`) with `-50°C` DBC physical offset scaling
+- Automatic detection and visual tagging for disconnected temperature sensors (`N/C (Disconnected)`)
+- FOC BitState and DEM Code metrics in telemetry stream, CSV log headers, Overview tab, and Powertrain tab
+
 ## v2.5.1 — 2026-07-20
 ### Fixed
 - Scaled motor inverter RPM by 10 for accurate speed readout

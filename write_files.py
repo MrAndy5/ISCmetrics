@@ -364,6 +364,17 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.5.1 — 2026-07-20
+### Fixed
+- Scaled motor inverter RPM by 10 for accurate speed readout
+- Scaled accumulator current (`corriente_accu`) and DC-DC current (`corriente_dcdc`) to Amperes (A) across telemetry decoder and UI
+- Fixed post-race GPS/AMS merge alignment signal scaling
+
+### Added
+- Empirical APPS 1 & APPS 2 ADC calibration bounds for accurate 0-100% throttle normalization
+- High-contrast Matplotlib plot grid, tick, and spine styling across Light & Dark themes
+- Direct saving of extracted raw AMS log files to `AMS_data/` directory with "Date / Modified" column and custom styled popups
+
 ## v2.5.0 — 2026-07-18
 ### Added
 - New **Post-Race** tab supporting CAN/ISO-TP log retrieval directly from the car's log system (LogFS protocol over CAN), with live download progress and transfer statistics

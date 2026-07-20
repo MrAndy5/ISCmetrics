@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.6.1 — 2026-07-20
+### Fixed
+- Internal resistance (IR) voltage drop compensation for Sony VTC6 SoC estimation (`0.35 mV/A` per 6p group) to eliminate false SoC sags during high current acceleration spikes
+
+### Added
+- Real-time 30-second rolling average battery duration estimator (calculates remaining run time to 5% SoC cutoff in `minutes & seconds`)
+- New `EST REMAINING` dashboard card on Overview tab and `Est. Cut-off` card on Powertrain tab
+
 ## v2.6.0 — 2026-07-20
 ### Added
 - Full NxTech Inverter State Machine decoding (INIT, STANDBY, READY, TORQUE/SPEED/CURRENT Active, FAULT_SOFT, FAULT_HARD, DISCHARGE, SHUTDOWN)

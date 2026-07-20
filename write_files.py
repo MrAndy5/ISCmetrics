@@ -364,6 +364,11 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.6.3 — 2026-07-20
+### Fixed
+- Updated default Post-Race AMS CAN Node ID to Node 1 (`0x001` / `0x011`) per firmware spec #406 / #403
+- Added support for zero-CRC (`expected_crc == 0`) responses from firmware LogFS `OPEN` to avoid SD card read stalls
+
 ## v2.6.2 — 2026-07-20
 ### Fixed
 - Applied empirical APPS calibration bounds (`APPS1_MIN/MAX` & `APPS2_MIN/MAX`) to Overview Throttle/Brake overlay plot, eliminating false 60% throttle readouts at pedal rest

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.4 — 2026-07-20
+### Performance & Optimization
+- Enabled SOLID LZMA compression with 64MB dictionary size in NSIS setup script for smaller installer size and faster update downloads
+
 ## v2.6.3 — 2026-07-20
 ### Fixed
 - Updated default Post-Race AMS CAN Node ID to Node 1 (`0x001` / `0x011`) per firmware spec #406 / #403

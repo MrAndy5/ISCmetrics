@@ -3,6 +3,9 @@
 ; Built by GitHub Actions — do not edit manually.
 ; Usage: makensis /DAPP_VERSION="2.0.0" /DOUTFILE="ISCmetrics_Setup_v2.0.0.exe" iscmetrics_setup.nsi
 
+SetCompressor /SOLID lzma
+SetCompressorDictSize 64
+
 !include "MUI2.nsh"
 
 ; Command-line overridable defines

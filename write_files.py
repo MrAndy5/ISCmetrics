@@ -148,6 +148,9 @@ w("installer/iscmetrics_setup.nsi", r"""
 ; Built by GitHub Actions — do not edit manually.
 ; Usage: makensis /DAPP_VERSION="2.0.0" /DOUTFILE="ISCmetrics_Setup_v2.0.0.exe" iscmetrics_setup.nsi
 
+SetCompressor /SOLID lzma
+SetCompressorDictSize 64
+
 !include "MUI2.nsh"
 
 ; Command-line overridable defines
@@ -363,6 +366,10 @@ Configurable in **Settings**:
 # ── CHANGELOG ────────────────────────────────────────────────────────────────
 w("CHANGELOG.md", """\
 # Changelog
+
+## v2.6.4 — 2026-07-20
+### Performance & Optimization
+- Enabled SOLID LZMA compression with 64MB dictionary size in NSIS setup script for smaller installer size and faster update downloads
 
 ## v2.6.3 — 2026-07-20
 ### Fixed

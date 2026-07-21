@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.6.5 — 2026-07-21
+### Added
+- Real-time vehicle speed calculation (km/h) derived directly from motor inverter RPM
+- Detailed DEM Code fault description readout in Powertrain status tab (e.g., `8 - EMachine Overtemperature`)
+
+### Fixed
+- Inverted current signs (`corriente_accu`, `corriente_dcdc`, `inv_current_actual`) to align with discharge polarity conventions
+- Non-destructive post-race CSV export (`*_merged.csv`) when integrating GPS or AMS micro-SD logs
+- Replaced text `degC` with proper degree symbol `ºC` across dashboard metrics, plot titles, and TTS alerts
+
+### Performance & Optimization
+- Optimized PyInstaller build spec (`ISC_RTT.spec`) with bytecode optimization level 2 and excluded heavy unused modules (`QtWebEngine`, `QtQml`, `QtMultimedia`, `scipy`)
+
 ## v2.6.4 — 2026-07-20
 ### Performance & Optimization
 - Enabled SOLID LZMA compression with 64MB dictionary size in NSIS setup script for smaller installer size and faster update downloads

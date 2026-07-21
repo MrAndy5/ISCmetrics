@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.10 — 2026-07-21
+### Fixed
+- Fixed `ModuleNotFoundError: No module named 'pydoc'` executable crash by retaining `pydoc` in PyInstaller build spec (`ISC_RTT.spec`) — required by `pyarrow.vendored.docscrape` which is imported transitively through `pandas → pyarrow`
+
 ## v2.6.9 — 2026-07-21
 ### Added
 - **Live GPS from radio snapshot** (ECU feat/gps-position-speed / issue #147):

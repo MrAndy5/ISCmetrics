@@ -367,12 +367,20 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.6.6 — 2026-07-21
+### Fixed
+- Fixed `ModuleNotFoundError: No module named 'unittest'` executable crash by retaining `unittest` in PyInstaller build spec (`ISC_RTT.spec`) required by Matplotlib/PyParsing
+- Fixed vehicle speed calculation math from motor inverter RPM
+- Suppressed flashing PowerShell console window during TTS alert speech generation on Windows
+- Separated Motor Temperature (KTY) and Power Stage Temperature (IGBT) in Powertrain status metrics
+
 ## v2.6.5 — 2026-07-21
 ### Added
 - Real-time vehicle speed calculation (km/h) derived directly from motor inverter RPM
 - Detailed DEM Code fault description readout in Powertrain status tab (e.g., `8 - EMachine Overtemperature`)
 
 ### Fixed
+- Fixed black PowerShell pop-up windows flashing on Windows when voice alerts (TTS) trigger without SAPI win32com dependencies
 - Inverted current signs (`corriente_accu`, `corriente_dcdc`, `inv_current_actual`) to align with discharge polarity conventions
 - Non-destructive post-race CSV export (`*_merged.csv`) when integrating GPS or AMS micro-SD logs
 - Replaced text `degC` with proper degree symbol `ºC` across dashboard metrics, plot titles, and TTS alerts

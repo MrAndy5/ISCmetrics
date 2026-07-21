@@ -367,6 +367,16 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.6.9 — 2026-07-21
+### Added
+- **Live GPS from radio snapshot** (ECU feat/gps-position-speed / issue #147):
+  - Decodes GPS position, speed, course, satellite count and fix flag directly from the nRF24 radio snapshot bytes 82–95
+  - `gps_lat_deg`, `gps_lon_deg`, `gps_speed_kmh`, `gps_course_deg`, `gps_sats`, `gps_has_fix` fields added to decoder, CSV log headers, and SNAPSHOT_CHANNELS data table
+  - All GPS fields are gated on `gps_has_fix` in the CSV log and UI (last valid position is not shown as live after fix drops)
+  - Overview tab indicator bar shows live `GPS ✓  lat° lon°  speed km/h  [N sats]` when fix is active (green) or `GPS: NO FIX` when searching (grey)
+  - Debug log prints GPS lat/lon/speed/course/sats every 2s when fix is active
+  - Backward compatible: unchanged radio wire format (102 bytes), un-updated ECUs silently skip GPS bytes (all zero = no fix)
+
 ## v2.6.8 — 2026-07-21
 ### Fixed
 - Added Power Stage (IGBT) metric card and reorganized Inverter Status & Diagnostics grid layout in Powertrain tab

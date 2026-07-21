@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.7 — 2026-07-21
+### Fixed
+- Updated Marple Data SDK integration (`db.push_file`) for direct stream uploads during telemetry session sync
+
 ## v2.6.6 — 2026-07-21
 ### Fixed
 - Fixed `ModuleNotFoundError: No module named 'unittest'` executable crash by retaining `unittest` in PyInstaller build spec (`ISC_RTT.spec`) required by Matplotlib/PyParsing

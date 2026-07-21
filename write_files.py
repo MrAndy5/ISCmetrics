@@ -367,6 +367,10 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.6.8 — 2026-07-21
+### Fixed
+- Added Power Stage (IGBT) metric card and reorganized Inverter Status & Diagnostics grid layout in Powertrain tab
+
 ## v2.6.7 — 2026-07-21
 ### Fixed
 - Updated Marple Data SDK integration (`db.push_file`) for direct stream uploads during telemetry session sync

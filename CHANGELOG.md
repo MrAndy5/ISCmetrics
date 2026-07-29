@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.7.1 — 2026-07-29 — The Endurance Update
+### Added
+- **Predictive Analytics Engine & Endurance Strategy Advisor (`PredictiveAnalyticsEngine`)**:
+  - **Driver Efficiency Index**: Real-time energy consumption rate (`Wh/min`) and distance-based efficiency (`Wh/km`)
+  - **Thermal Derating & Overtemp Predictor**: Motor heating rate ($dT/dt$ in °C/min) and projected time remaining until 90°C overtemp trip (`SAFE` when cool)
+  - **Battery Health & Internal Resistance Estimator ($R_{int}$ in mΩ)**: Dynamic rolling internal resistance estimation calculated during step-throttle current transitions ($\Delta I > 10	ext{A}, \Delta V < -1	ext{V}$)
+  - **Adaptive Driver Pace & Strategy Advisor**: Calculates recommended maximum torque limit (%) to pace the driver for completing the full 22-minute Endurance event within remaining battery Wh capacity
+  - **Powertrain UI Cards & Customize Channels**: Added dedicated status cards to Powertrain tab (`Consumption Rate`, `Heating Rate`, `Est. Overtemp`, `Pack Internal R`, `Rec. Torque %`) and exposed channels for custom plotting
+- **SoC Monotonic Non-Increasing Latch & Safeguards**:
+  - Monotonic non-increasing SoC latch (`_session_min_soc`) during active runs: prevents SoC from falsely ticking upward during voltage relaxation/rebound after throttle lifts
+  - Active current sign rectification safeguard: automatically rectifies negative current readings when motor is spinning/drawing torque
+  - Automatic state reset on new session start
+
 ## v2.7.0 — 2026-07-29
 ### Added
 - **Real-Time Vector GPS Track Map (`GPSTrackWidget`)**:
@@ -10,11 +23,13 @@
   - Primary estimation from DC Bus Voltage (`inv_dc_bus_V`) between 400 V (100% SoC) and 280 V (0% accumulator cutoff)
   - Secondary blending with IR-compensated per-cell OCV (`0.35 mV/A` per 6p group) when cell-level telemetry is valid
   - Eliminates false 0% SoC readings when cell-level telemetry is un-decoded or missing
+  - Monotonic non-increasing SoC latch during active runs: prevents SoC from falsely ticking upward during voltage relaxation/rebound after throttle lifts
 - **Dual-Source Remaining Battery Duration Estimator**:
   - Source A: 60-second rolling average power calculation (`corriente_accu × Vbus`)
   - Source B: Linear voltage-drop rate extrapolation (`dv/dt` over session elapsed time) down to 280 V cutoff
   - Displays the more conservative (lower) time estimate to prevent unexpected battery depletion
   - Minimum 20A racing current floor while inverter is running (state 6) to avoid unrealistically high estimates during coasting
+  - Active current sign rectification safeguard: automatically rectifies negative current readings when motor is spinning/drawing torque to prevent calculation corruption from sensor noise or inverted CAN signals
 
 ### Fixed
 - Corrected accumulator discharge current (`corriente_accu`) polarity across telemetry decoders and UI metrics

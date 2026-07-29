@@ -1,5 +1,37 @@
 # Changelog
 
+## v2.7.0 — 2026-07-29
+### Added
+- **Real-Time Vector GPS Track Map (`GPSTrackWidget`)**:
+  - Live offline 2D vector map canvas in Dynamics tab using local equirectangular projection anchored to first GPS fix
+  - Displays vehicle trajectory trail, live position dot, heading direction arrow, north compass rose, track distance, and satellite count
+  - Manual `⟳ Reset Track` button and automatic trail reset on new session start
+- **Dual-Source Battery SoC & Energy Estimator**:
+  - Primary estimation from DC Bus Voltage (`inv_dc_bus_V`) between 400 V (100% SoC) and 280 V (0% accumulator cutoff)
+  - Secondary blending with IR-compensated per-cell OCV (`0.35 mV/A` per 6p group) when cell-level telemetry is valid
+  - Eliminates false 0% SoC readings when cell-level telemetry is un-decoded or missing
+- **Dual-Source Remaining Battery Duration Estimator**:
+  - Source A: 60-second rolling average power calculation (`corriente_accu × Vbus`)
+  - Source B: Linear voltage-drop rate extrapolation (`dv/dt` over session elapsed time) down to 280 V cutoff
+  - Displays the more conservative (lower) time estimate to prevent unexpected battery depletion
+  - Minimum 20A racing current floor while inverter is running (state 6) to avoid unrealistically high estimates during coasting
+
+### Fixed
+- Corrected accumulator discharge current (`corriente_accu`) polarity across telemetry decoders and UI metrics
+
+## v2.6.11 — 2026-07-29
+### Added & Fixed
+- **Dual-Source Battery SoC Calibration (280V–400V range)**:
+  - Calibrated 100% SoC to 400V (4.211V/cell) and 0% cutoff to 280V (2.947V/cell) for 95s6p Sony VTC6 accumulator.
+  - Primary SoC estimation uses `inv_dc_bus_V` (always active even if cell sensors are unpopulated), blended with fine-grained per-cell OCV table when cell voltages are present.
+- **Dual Time-Remaining Estimator**:
+  - Wh-based calculation (`6120 Wh` pack capacity × current SoC fraction ÷ average power).
+  - 60-second rolling power average (`corriente_accu × Vbus`).
+  - Added a 20A racing power floor while inverter is in State 6 (Running) to prevent artificially inflated estimates during coasting.
+  - Linear voltage-drop rate extrapolation (`dV/dt`) fallback when current readings are unpopulated or uncalibrated.
+- **Current Sign Fix**:
+  - Inverted `corriente_accu` decoding sign to represent discharge (driving) as positive current and regen as negative current.
+
 ## v2.6.10 — 2026-07-21
 ### Fixed
 - Fixed `ModuleNotFoundError: No module named 'pydoc'` executable crash by retaining `pydoc` in PyInstaller build spec (`ISC_RTT.spec`) — required by `pyarrow.vendored.docscrape` which is imported transitively through `pandas → pyarrow`

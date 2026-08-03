@@ -367,6 +367,13 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.7.3 — 2026-08-03
+### Fixed
+- **Fixed Startup `AttributeError: 'MainWindow' object has no attribute '_log'`**:
+  - Reordered `MainWindow.__init__` initialization sequence to guarantee `self._log` attribute is defined before `self._load_settings_from_file()` executes
+  - Made `self._log_append()` defensive against uninitialized UI log widgets, falling back safely to standard logging `logger.info()`
+  - Prevented redundant file writes to `settings.json` during initial application startup settings load
+
 ## v2.7.2 — 2026-08-03
 ### Added
 - **Interactive Brake & APPS Sensor Calibration Wizard (`BrakeCalibrationWizard`)**:

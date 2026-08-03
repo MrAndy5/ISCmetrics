@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.7.2 — 2026-08-03
+### Added
+- **Interactive Brake & APPS Sensor Calibration Wizard (`BrakeCalibrationWizard`)**:
+  - Multi-step interactive GUI wizard for calibrating raw ADC bounds (`APPS1_MIN/MAX`, `APPS2_MIN/MAX`, `BRK_MIN/MAX`) with live pedal readout bars and baseline capture steps
+  - Automatically updates live scaling parameters and persists custom pedal calibration into `settings.json`
+- **Fault History Logger & Diagnostic Viewer (`FaultHistoryDialog`)**:
+  - Live and historical ECU fault log table tracking DEM diagnostic codes, inverter state changes, and system errors with timestamps, category tags, error descriptions, and clear/export options
+- **APPS Implausibility Detector (FMEA / EV 2.5 Rule Compliance)**:
+  - Continuously monitors percentage position agreement between APPS 1 & APPS 2 pedal sensors while high-voltage bus is energized
+  - Triggers a critical UI alert banner and logs a fault event if position disagreement exceeds 10% for $\ge 3$ consecutive frames ($pprox 300	ext{ ms}$)
+- **Human-Readable Inverter State Mapping**:
+  - Displays human-readable state names alongside numeric codes in Overview and Powertrain panels (`6 RUN`, `1 STDBY`, `5 SOFT`, `7 HARD`, etc.)
+- **Persistent Predictive Analytics Logging**:
+  - Writes calculated predictive analytics (`eff_wh_min`, `eff_wh_km`, `thermal_dt_dt`, `thermal_t_overtemp`, `batt_r_int`, `strategy_rec_torque`) directly into the shared snapshot dictionary, enabling real-time logging into CSV session files
+
 ## v2.7.1 — 2026-07-29 — The Endurance Update
 ### Added
 - **Predictive Analytics Engine & Endurance Strategy Advisor (`PredictiveAnalyticsEngine`)**:

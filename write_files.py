@@ -367,6 +367,21 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.8.0 — 2026-08-06 — The Barcelona Update
+### Added
+- **Cross-Session Fault Pattern Database (`FaultPatternDialog`)**:
+  - Scans all historical telemetry CSV logs in `Documents/ISCmetrics/logs` to identify recurring fault trends across all previous runs
+  - Computes fault code occurrences, percentage of sessions affected, first/last seen timestamps, and severity categorization
+  - Highlights top recurring ECU/Inverter DEM codes, cell imbalance events, and APPS implausibility occurrences with export capabilities
+- **Brake Hydraulic Pressure Sensor Calibration**:
+  - Full hydraulic brake pressure ADC calibration (`BRK_MIN` to `BRK_MAX`) integrated into `BrakeCalibrationWizard`
+  - Normalizes brake percentage readouts across plots, pedal widgets, and persists parameters in `settings.json`
+- **Session Energy Counter & Cell Imbalance Meter**:
+  - Real-time `Session Energy (Wh)` accumulator counter tracking cumulative energy consumed ($P \times \Delta t$)
+  - `Cell Imbalance (mV)` metric card tracking maximum cell voltage spread ($V_{max} - V_{min}$) with configurable threshold alerts (default 100 mV)
+- **Enhanced Settings Controls**:
+  - Added `alert_cell_imb_mv` threshold control to `SettingsDialog` with persistence in `settings.json`
+
 ## v2.7.3 — 2026-08-03
 ### Fixed
 - **Fixed Startup `AttributeError: 'MainWindow' object has no attribute '_log'`**:

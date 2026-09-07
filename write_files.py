@@ -367,6 +367,17 @@ Configurable in **Settings**:
 w("CHANGELOG.md", """\
 # Changelog
 
+## v2.8.1 — 2026-09-07
+### Added
+- **ECU FSM & AMS FSM Textual State Decoding (`ECU_CTRL_STATE_MAP`, `AMS_FSM_STATE_MAP`)**:
+  - Displays human-readable FSM state names alongside numeric codes across indicator bars, Powertrain tab, and Dynamics tab:
+    - ECU FSM: `WAIT_VDC`, `PRECHARGE`, `WAIT_START`, `R2D_BUZZER`, `WAIT_STANDBY`, `ACTIVE`, `AMS_ERROR`
+    - AMS FSM: `STANDBY`, `PRECHARGE`, `ARMED`, `R2D`, `CHARGE`, `ERROR`
+- **GPS Heading (Course Over Ground)**:
+  - Added live course heading readout (`hdg: XXX°`) to Overview tab GPS status bar alongside lat/lon coordinates, speed, and satellite count
+- **Telemetry Protocol Alignment with ECU v2.1.1**:
+  - Aligned nRF24 receiver config documentation (`0x4543553031` / `'ECU01'`) and raw electrical RPM decoding with firmware `IFS08-CE-ECU v2.1.1`
+
 ## v2.8.0 — 2026-08-06 — The Barcelona Update
 ### Added
 - **Cross-Session Fault Pattern Database (`FaultPatternDialog`)**:

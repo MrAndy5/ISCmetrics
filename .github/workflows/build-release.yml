@@ -9,6 +9,10 @@ on:
       version:
         description: 'Override version (e.g. v2.0.0-test)'
         required: false
+      source_ref:
+        description: 'Branch or tag in IFS09-TE to build from (default: main)'
+        required: false
+        default: 'main'
 
 permissions:
   contents: write   # required to create GitHub Releases and upload assets
@@ -27,9 +31,9 @@ jobs:
       - name: Checkout ISCmetrics source
         uses: actions/checkout@v4
         with:
-          repository: isc-fs/IFS08-TE
-          ref: feat/receptor_08
-          sparse-checkout: ISC_REAL_TIME_25
+          repository: isc-fs/IFS09-TE
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          sparse-checkout: isc_realtime_26
           sparse-checkout-cone-mode: false
           path: src
 
@@ -40,7 +44,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        working-directory: src/ISC_REAL_TIME_25
+        working-directory: src/isc_realtime_26
         run: |
           pip install --upgrade pip
           pip install pyinstaller pyqt5 matplotlib numpy pyserial requests openpyxl influxdb-client pandas marpledata
@@ -60,7 +64,7 @@ jobs:
 
       # ── 5. Patch APP_VERSION in ui.py ─────────────────────────────────────
       - name: Patch APP_VERSION
-        working-directory: src/ISC_REAL_TIME_25
+        working-directory: src/isc_realtime_26
         shell: pwsh
         run: |
           $v = "${{ steps.ver.outputs.VERSION }}" -replace '^v', ''
@@ -71,12 +75,12 @@ jobs:
 
       # ── 6. Build with PyInstaller ─────────────────────────────────────────
       - name: PyInstaller build
-        working-directory: src/ISC_REAL_TIME_25
+        working-directory: src/isc_realtime_26
         run: pyinstaller ISC_RTT.spec --clean --noconfirm
 
       # ── 7. Verify build output ────────────────────────────────────────────
       - name: Verify build
-        working-directory: src/ISC_REAL_TIME_25
+        working-directory: src/isc_realtime_26
         shell: pwsh
         run: |
           if (!(Test-Path "dist\ISC_RTT\ISC_RTT.exe")) {
@@ -93,12 +97,12 @@ jobs:
       - name: Stage NSIS script
         shell: pwsh
         run: |
-          Copy-Item "installer\iscmetrics_setup.nsi" "src\ISC_REAL_TIME_25\iscmetrics_setup.nsi"
+          Copy-Item "installer\iscmetrics_setup.nsi" "src\isc_realtime_26\iscmetrics_setup.nsi"
 
       # ── 10. Compile installer EXE ─────────────────────────────────────────
       - name: Compile NSIS installer
         id: nsis
-        working-directory: src/ISC_REAL_TIME_25
+        working-directory: src/isc_realtime_26
         shell: pwsh
         run: |
           $v   = "${{ steps.ver.outputs.VERSION }}"
@@ -114,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: installer
-          path: src/ISC_REAL_TIME_25/${{ steps.nsis.outputs.INSTALLER }}
+          path: src/isc_realtime_26/${{ steps.nsis.outputs.INSTALLER }}
 
       # ── 12. Publish GitHub Release ────────────────────────────────────────
       - name: Create GitHub Release
@@ -123,7 +127,7 @@ jobs:
           tag_name: ${{ steps.ver.outputs.VERSION }}
           name: ISCmetrics ${{ steps.ver.outputs.VERSION }}
           body_path: CHANGELOG.md
-          files: src/ISC_REAL_TIME_25/${{ steps.nsis.outputs.INSTALLER }}
+          files: src/isc_realtime_26/${{ steps.nsis.outputs.INSTALLER }}
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,7 @@
 
 ; ISCmetrics NSIS installer
 ; Built by GitHub Actions — do not edit manually.
-; Usage: makensis /DAPP_VERSION="2.0.0" /DOUTFILE="ISCmetrics_Setup_v2.0.0.exe" iscmetrics_setup.nsi
+; Usage: makensis /DAPP_VERSION="2.9.0" /DOUTFILE="ISCmetrics_Setup_v2.9.0.exe" iscmetrics_setup.nsi
 
 SetCompressor /SOLID lzma
 SetCompressorDictSize 64
@@ -48,7 +48,7 @@ Section "ISCmetrics (required)" SecMain
   ; Write uninstaller
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
-  ; Registry entry
+  ; Registry entry for Add/Remove Programs
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ISCmetrics" \
     "DisplayName" "ISCmetrics"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ISCmetrics" \
@@ -57,6 +57,8 @@ Section "ISCmetrics (required)" SecMain
     "UninstallString" "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ISCmetrics" \
     "Publisher" "ISC Formula Student"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ISCmetrics" \
+    "DisplayIcon" "$INSTDIR\ISC_RTT.exe"
   WriteRegStr HKLM "Software\ISCmetrics" "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\ISCmetrics" "Version" "${APP_VERSION}"
 
@@ -67,7 +69,7 @@ Section "ISCmetrics (required)" SecMain
   CreateShortcut "$SMPROGRAMS\ISCmetrics\Uninstall ISCmetrics.lnk" \
     "$INSTDIR\uninstall.exe"
 
-  ; Desktop shortcut (optional — user can delete)
+  ; Desktop shortcut
   CreateShortcut "$DESKTOP\ISCmetrics.lnk" \
     "$INSTDIR\ISC_RTT.exe" "" "$INSTDIR\ISC_RTT.exe" 0
 SectionEnd

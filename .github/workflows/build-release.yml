@@ -7,12 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Override version (e.g. v2.0.0-test)'
+        description: 'Override version (e.g. v2.9.0-test)'
         required: false
-      source_ref:
-        description: 'Branch or tag in IFS09-TE to build from (default: main)'
-        required: false
-        default: 'main'
 
 permissions:
   contents: write   # required to create GitHub Releases and upload assets
@@ -23,19 +19,20 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # ── 1. Checkout this releases repo (contains installer script) ────────
+      # ── 1. Checkout this releases repo (contains NSIS script) ────────────
       - name: Checkout releases repo
         uses: actions/checkout@v4
 
-      # ── 2. Checkout ISCmetrics source ─────────────────────────────────────
+      # ── 2. Checkout ISCmetrics source (IFS09-TE, isc_realtime_26) ────────
       - name: Checkout ISCmetrics source
         uses: actions/checkout@v4
         with:
           repository: isc-fs/IFS09-TE
-          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          ref: main
           sparse-checkout: isc_realtime_26
           sparse-checkout-cone-mode: false
           path: src
+          token: ${{ secrets.GH_PAT }}
 
       # ── 3. Python setup ───────────────────────────────────────────────────
       - name: Set up Python 3.11
@@ -47,7 +44,7 @@ jobs:
         working-directory: src/isc_realtime_26
         run: |
           pip install --upgrade pip
-          pip install pyinstaller pyqt5 matplotlib numpy pyserial requests openpyxl influxdb-client pandas marpledata
+          pip install pyinstaller pyqt5 matplotlib numpy pyserial requests openpyxl influxdb-client pandas marpledata python-can
 
       # ── 4. Resolve version ────────────────────────────────────────────────
       - name: Get version
@@ -72,6 +69,7 @@ jobs:
           $content = $content -replace 'APP_VERSION\s*=\s*"[^"]+"', "APP_VERSION = `"$v`""
           Set-Content ui.py $content -NoNewline
           Write-Host "APP_VERSION patched to: $v"
+          Select-String -Path ui.py -Pattern APP_VERSION | Select-Object -First 3
 
       # ── 6. Build with PyInstaller ─────────────────────────────────────────
       - name: PyInstaller build
@@ -84,10 +82,13 @@ jobs:
         shell: pwsh
         run: |
           if (!(Test-Path "dist\ISC_RTT\ISC_RTT.exe")) {
-            Write-Error "PyInstaller output not found!"
+            Get-ChildItem -Recurse dist -ErrorAction SilentlyContinue | Select-Object FullName
+            Write-Error "PyInstaller output not found at dist\ISC_RTT\ISC_RTT.exe"
             exit 1
           }
-          Write-Host "Build OK — $(Get-ChildItem dist\ISC_RTT | Measure-Object).Count files in dist\ISC_RTT"
+          $count = (Get-ChildItem "dist\ISC_RTT" -Recurse | Measure-Object).Count
+          $sizeMB = [math]::Round((Get-ChildItem "dist\ISC_RTT" -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB, 1)
+          Write-Host "Build OK - $count files, $sizeMB MB in dist\ISC_RTT"
 
       # ── 8. Install NSIS ───────────────────────────────────────────────────
       - name: Install NSIS
@@ -110,15 +111,18 @@ jobs:
           $nsis = "C:\Program Files (x86)\NSIS\makensis.exe"
           & $nsis /DAPP_VERSION="$v" /DOUTFILE="$out" iscmetrics_setup.nsi
           if ($LASTEXITCODE -ne 0) { Write-Error "NSIS failed"; exit 1 }
-          Write-Host "Installer created: $out ($('{0:N1}' -f ((Get-Item $out).Length / 1MB)) MB)"
+          $sizeMB = [math]::Round((Get-Item $out).Length / 1MB, 1)
+          Write-Host "Installer created: $out ($sizeMB MB)"
           Add-Content $env:GITHUB_OUTPUT "INSTALLER=$out"
 
-      # ── 11. Upload artifact (for debugging) ───────────────────────────────
+      # ── 11. Upload artifact (always — useful for debugging) ───────────────
       - name: Upload installer artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: installer
           path: src/isc_realtime_26/${{ steps.nsis.outputs.INSTALLER }}
+          if-no-files-found: warn
 
       # ── 12. Publish GitHub Release ────────────────────────────────────────
       - name: Create GitHub Release

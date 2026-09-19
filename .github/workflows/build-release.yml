@@ -32,7 +32,6 @@ jobs:
           sparse-checkout: isc_realtime_26
           sparse-checkout-cone-mode: false
           path: src
-          token: ${{ secrets.GH_PAT }}
 
       # ── 3. Python setup ───────────────────────────────────────────────────
       - name: Set up Python 3.11
